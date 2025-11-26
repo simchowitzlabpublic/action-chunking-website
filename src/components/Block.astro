@@ -1,0 +1,36 @@
+---
+interface Props {
+  title?: string;
+  type?: string;
+}
+
+const { title, type } = Astro.props;
+
+function capitalize(string) {
+  if (typeof string !== 'string' || string.length === 0) {
+    return string; // Handle non-string or empty inputs
+  }
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+---
+
+<div class="card bg-base-200 shadow-lg">
+  <div class="card-body">
+    <div>
+    <span class="inline-title">
+      {title ? `${type} (${title}):` : `${type}:`}
+    </span>
+    <slot />
+    </div>
+  </div>
+</div>
+<style>
+    .inline-title {
+      color: var(--color-info);
+      font-weight: bold;
+    }
+    .inline-title + :global(p) {
+      display: inline;
+    }
+</style>
+

@@ -1,0 +1,39 @@
+import Block from '../components/Block.astro';
+import Figure from '../components/Figure.astro';
+import FigureEnv from '../components/FigureEnv.astro';
+import HStack from '../components/HStack.astro';
+
+## Introduction
+
+Imitation learning (IL) is the problem of learning complex behaviors from data labeled with actions from an expert demonstrator policy. This methodology encompasses both some of the earliest examples and most recent state-of-the-art in control for autonomous robotic systems. Following the rise of large language models (LLMs), IL has also become increasingly prevalent in settings where an agent predicts **discrete tokens**, such as words in a sentence, lines in a proof, or positions on a chessboard. Such methods have also seen adoption in the context of both continuous and discretized-action control of continuous state-space dynamical systems in an autoregressive fashion.
+
+The recent and dramatic successes of imitation learning in continuous control applications has coincided with a range of algorithmic interventions which appear essential to ensure strong performance: 1. the prediction of open-loop sequences, or "chunks" of actions by the control policy, called **action-chunking** (AC), 2. the careful curation of expert data to be imitated and 3. the adoption of **generative** neural architectures (e.g. conditional diffusion models) as parameterizations of learned policies. While the benefits of 3. have been studied broadly, a precise understanding of how action-chunking and curated expert data improve behavior cloning performance remains elusive.
+
+In this work, we provide the first theoretical guarantees justifying the practices of AC and exploratory data augmentation during expert data collection (defined formally below) in the **minimal** setting of imitation of an expert in a state-based continuous-control problem. Our point of departure is the finding in recent work that imitation learning in continuous settings&mdash;even those whose dynamics and expert demonstrator appear benign&mdash;can be considerably more challenging than imitation in discrete settings, such as those encountered in language modeling, demonstrating compounding errors can grow exponentially with horizon, as opposed to polynomially (or none).
+
+### Contributions
+
+We provide the first theoretical guarantees in continuous state-action IL for **interventions that provably prevent compounding error without iterative expert feedback.** Whereas previous work require either iterative interaction with the expert or knowledge of the underlying system, we establish our results without access to such oracles, using near-"vanilla" behavior cloning. We study two key practices:
+
+**Intervention 1: Action-Chunking.** When the environment is benign, we show the algorithmic modification of **action-chunking**, i.e., predicting and playing open-loop sequences of actions, mitigates compounding errors without requiring any modification to the expert data.
+
+**Intervention 2: Exploratory Data Collection via Expert Noise-Injection.** When the environment is less benign, some alteration of the expert data distribution is necessary. We demonstrate **noise-injection**, i.e., adding noise while executing expert actions, is a simple and practical tool for avoiding compounding errors.
+
+<FigureEnv>
+  <HStack>
+    <Figure src="/figs/action_chunking.svg" alt="Overview of Action Chunking and Noise Injection" height="25rem"/>
+  </HStack>
+</FigureEnv>
+
+<Block type="Surprising Takeaways">
+While our interventions are reflective of popular practices at the intersection of (reinforcement) learning and control, our analysis additionally uncovers phenomena that contrast with the common perspectives of both literatures.
+
+1. **Rationale for action-chunking:** Action-chunking has been motivated by both enabling larger policy latency, and encouraging long-horizon planning and stronger policy representations. We illuminate an orthogonal rationale: **action-chunking encourages control-theoretic stability of policies learned**, mitigating possibly exponential compounding errors from unstable closed-loop interactions.
+
+2. **Sufficiency of Non-Interactive Exploration:** Various prior works have approached the compounding errors problem by adaptively querying the expert policy at possibly suboptimal states, with the overarching goal of **witnessing how the expert policy recovers from errors**. We expose the key directions of (additional) supervision around expert trajectories required to achieve stable imitation, and **we attain this supervision through noising expert actions at a fixed, isotropic scale**. In doing so, we establish that&mdash;unlike what an online learning perspective may suggest&mdash;**iterative, adaptive interaction with an expert is unnecessary to achieve near-optimal expert imitation**.
+
+3. **Towards New Notions of "Coverage" in Continuous State Space:** The lower bounds show that standard notions of "coverage" in theoretical reinforcement learning (which is **maximal** when learning from expert data) is insufficient for mitigating compounding error in continuous behavior cloning. Our work reveals that **novel, stronger notions of coverage realized via noise injection do suffice in continuous state spaces**, and lead to guarantees that are sharper than coverage-based arguments which leverage exploratory data.
+
+4. **Towards New Notions of "Excitation" in Continuous State Space:** Despite requiring stronger coverage, our bounds do not require the injected noise to produce "persistent excitation" from control theory, i.e. uniform variation across all state directions. Rather **naive exploration** via white noise suffices, even when the underlying system is not controllable. This is because the **error-directions which are susceptible to compounding error are precisely those along which noise injection provides supervision**.
+</Block>
+

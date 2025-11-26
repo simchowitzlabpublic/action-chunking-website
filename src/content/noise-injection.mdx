@@ -1,0 +1,50 @@
+import Block from '../components/Block.astro';
+import Figure from '../components/Figure.astro';
+import FigureEnv from '../components/FigureEnv.astro';
+import HStack from '../components/HStack.astro';
+
+## Noise Injection Mitigates Compounding Error under Smooth, Unstable Dynamics
+
+We now consider the difficult setting where the ambient dynamics $f$ may not be open-loop stable. In this case, purely algorithmic interventions like action-chunking are generally insufficient, as erroneous actions can quickly lead to unstable behavior. This necessitates altering the demonstration distribution $\mathcal{P}_{\text{demo}}$ beyond the expert's $\mathcal{P}_{\text{exp}}$, i.e., some form of additional **exploratory data collection is required**.
+
+<Block title="Noise Injection" type="Definition">
+We define the **expert distribution under noise injection** as the distribution $\mathcal{P}_{\text{exp},\sigma}$ over trajectories $(\tilde{\mathbf{x}}_t, \tilde{\mathbf{u}}_t)_{t\geq 1}$ with $\tilde{\mathbf{x}}_1 \sim D$, and $\tilde{\mathbf{u}}_t = \pi^*(\tilde{\mathbf{x}}_t),\;\tilde{\mathbf{x}}_{t+1} = f(\tilde{\mathbf{x}}_t, \tilde{\mathbf{u}}_t + \sigma_u \mathbf{z}_t)$ for $t \geq 1$, where $\mathbf{z}_t \sim \text{Unif}(\mathbb{B}^{d_u}(1))$ is drawn uniformly over the unit ball.
+</Block>
+
+<Block title="Exploratory Data Collection" type="Intervention">
+For the noise-injected distribution $\mathcal{P}_{\text{exp},\sigma}$ defined above, provide a sample $S_{n,\sigma,\alpha}$ of trajectories, where for $1 \le i \le \lfloor\alpha n\rfloor$ the trajectories are i.i.d. from $\mathcal{P}_{\text{exp}}$, and the remaining trajectories are drawn i.i.d. from $\mathcal{P}_{\text{exp},\sigma}$. Define the corresponding mixture distribution $\mathcal{P}_{\text{exp},\sigma,\alpha} \triangleq \alpha \mathcal{P}_{\text{exp}} + (1-\alpha)\mathcal{P}_{\text{exp},\sigma}$. We then find $\hat{\pi}$ that attains low $J_{\text{demo}}^T(\hat{\pi}; \mathcal{P}_{\text{exp},\sigma,\alpha})$, e.g., by empirical risk minimization.
+</Block>
+
+<FigureEnv>
+  <HStack>
+    <Figure src="/figs/exploration_diagram.svg" alt="Exploratory data collection via noise injection"/>
+  </HStack>
+</FigureEnv>
+
+<Block type="Key Result">
+Let the expert policy and true dynamics $(\pi^*, f)$ be $(C_\pi,C_{\text{smooth}})$-smooth, respectively, and all policies $\pi$ are $L_\pi$-Lipschitz. The closed-loop system induced by $(\pi^*, f)$ is $(C_{\text{ISS}}, \rho)$-EISS. Let $\hat{\pi}$ be a $L_\pi$-Lipschitz, $C_\pi$-smooth policy. Then, for $\sigma_u \lesssim O^*[\text{poly}(1/C_\pi, 1/C_{\text{smooth}})] = O^*(1)$, we have:
+
+$$
+J_{L^2}^T(\hat{\pi}) \lesssim O^*(T) \sigma_u^{-2} J_{\text{demo}}^T(\hat{\pi}; \mathcal{P}_{\text{exp},\sigma,\alpha}[0.5]).
+$$
+
+In particular, setting $\sigma_u = O^*(1)$, we have:
+
+$$
+J_{L^2}^T(\hat{\pi}) \lesssim O^*(T) J_{\text{demo}}^T(\hat{\pi}; \mathcal{P}_{\text{exp},\sigma,\alpha}[0.5]).
+$$
+</Block>
+
+<FigureEnv>
+  <HStack>
+    <Figure src="/figs/noising_manifold.svg" alt="Effect of noise injection for controllable versus uncontrollable subspaces"/>
+  </HStack>
+</FigureEnv>
+
+### Key Findings
+
+- The key role of noise-injection is **ensuring the first-order policy error on the controllable subspace** is detectable.
+- We only require supervision on the **excitable subspace**. In particular, we bypass stringent requirements of RL-theoretic coverage or control-theoretic PE.
+- **Simple white noise suffices to explore** the excitable directions, as the most excitable (fastest compounding error) directions receive the most supervision.
+- **Imitating a mixture of clean and noise-injected trajectories** bypasses additive error scaling with $\sigma_u$. This further implies it is beneficial to use larger noise-levels $\sigma_u > 0$.
+

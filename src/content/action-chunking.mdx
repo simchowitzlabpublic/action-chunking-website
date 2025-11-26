@@ -1,0 +1,43 @@
+import Block from '../components/Block.astro';
+import Figure from '../components/Figure.astro';
+import FigureEnv from '../components/FigureEnv.astro';
+import HStack from '../components/HStack.astro';
+
+
+## Action-Chunking Suffices in Open-Loop Stable Systems
+
+Action-chunking is a popular practice in modern sequential modeling pipelines, where a policy predicts a sequence of actions, of which some number are played **in open-loop**. There are various intuitions of the practical benefits of action-chunking, ranging from: 1. robustness to non-Markovian / partial observability quirks in the data, 2. amenability to multi-modal prediction, 3. improved representation learning via multi-step prediction, and 4. simulating receding-horizon control. Yet, we show that even in control settings with **unimodal, Markovian, state-feedback** experts, action-chunking serves a critical role in subverting exponential compounding errors.
+
+<Block title="Chunking Policy" type="Definition">
+A chunking policy is specified by a chunk-length $\ell$, and mappings $\text{chunk}_{i}[\pi]: \mathcal{X} \to \mathcal{U}$, $i \in [\ell]$ such that, for $k \in \mathbb{Z}_{\ge 0}$ and $i \in [\ell]$ and $t = k\ell + i$, $\pi(\mathbf{x}_{1:t},\mathbf{u}_{1:t-1},t) = \text{chunk}_i[\pi](\mathbf{x}_{k\ell + 1}, i)$. We also write $\text{chunk}[\pi](\mathbf{x}) = (\text{chunk}_1(\mathbf{x}),\dots, \text{chunk}_{\ell}(\mathbf{x}))$.
+</Block>
+
+<FigureEnv>
+    <Figure src="/figs/action_chunking.svg" alt="Visualization of the stabilizing effect of action chunks"/>
+</FigureEnv>
+
+**Intervention 1: Learning over Chunked Policies** We sample $S_n$ as denote $n$ i.i.d. trajectories drawn from the expert distribution $\mathcal{P}_{\text{exp}}$. We aim to find $\hat{\pi}_{\text{chunk}}$ from a class of length-$\ell$ chunked policies, $\Pi_{\text{chunk}}$, that attains low **on-expert error**, e.g., by empirical risk minimization.
+
+For chunked policies:
+
+$$
+J_{\text{demo}}^T(\hat{\pi}_{\text{chunk}}; \mathcal{P}_{\text{exp}}) = \mathbb{E}_{\mathcal{P}_{\text{exp}}}\left[ \sum_{k=1}^{(T-1)/\ell} \|\mathbf{u}^*_{1+(k-1)\ell:k\ell} - \text{chunk}[\hat{\pi}_{\text{chunk}}](\mathbf{x}^*_{(k-1)\ell})\|^2\right].
+$$
+
+<Block type="Key Result">
+Let the true dynamics $f$ are $(C_{\text{ISS}},\rho)$-EISS in open-loop, and all base policies $\pi$ in consideration are $L_\pi$-Lipschitz. For sufficiently long chunk-length: $\ell > \log(1/\rho)^{-1} \cdot \log(\text{poly}(L_\pi, \hat{C}_{\text{ISS}}))$, let $\hat{\pi}_{\text{chunk}} = \text{chunked}(\hat{\pi}, g, \ell) \in \Pi_{\text{chunk}}$. We have the trajectory-error bound:
+
+$$
+J_{L^2}^T(\hat{\pi}_{\text{chunk}}) \leq O^*(1)J_{\text{demo}}^T(\hat{\pi}_{\text{chunk}}; \mathcal{P}_{\text{exp}}).
+$$
+
+This implies that when the ambient dynamics $f$ are EISS, then a sufficiently chunked imitator policy will accrue limited compounding errors&mdash;**horizon-free**&mdash;relative to the on-expert error it sees.
+</Block>
+
+<FigureEnv>
+  <HStack>
+    <Figure src="/figs/robomimic_toolhang.png" alt="RoboMimic experiments: Success rates as a function of evaluated action-chunk lengths"/>
+    <Figure src="/figs/robomimic_traj100.svg" alt="RoboMimic trajectory results"/>
+    <Figure src="/figs/robomimic_clean_vs_noise.svg" alt="RoboMimic clean vs noise comparison"/>
+  </HStack>
+</FigureEnv>

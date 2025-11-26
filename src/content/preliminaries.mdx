@@ -1,0 +1,44 @@
+import Block from '../components/Block.astro';
+import Figure from '../components/Figure.astro';
+import FigureEnv from '../components/FigureEnv.astro';
+import HStack from '../components/HStack.astro';
+
+## Preliminaries
+
+We consider a discrete-time, continuous state-action control system with states $\mathbf{x}_t \in \mathcal{X} = \mathbb{R}^{d_x}$ and inputs $\mathbf{u}_t \in \mathcal{U} = \mathbb{R}^{d_u}$, where dynamics deterministically evolve according to $\mathbf{x}_{t+1} = f(\mathbf{x}_t,\mathbf{u}_t)$. A deterministic policy $\pi$ maps histories of states, inputs, and the current time step to a control input $\mathbf{u}_t = \pi(\mathbf{x}_{1:t},\mathbf{u}_{1:t-1},t)$. We assume the initial state is drawn $\mathbf{x}_1 \sim D$ for some distribution $D$ fixed throughout. We say $\pi$ is Markovian and time-invariant if we can simply express $\mathbf{u}_t = \pi(\mathbf{x}_t)$. In this case, we define the closed-loop dynamics $f^{\pi}(\mathbf{x},\mathbf{u}) \triangleq f(\mathbf{x}, \pi(\mathbf{x}) + \mathbf{u})$, and $f^{\pi}(\mathbf{x}) = f^{\pi}(\mathbf{x},0)$.
+
+Given two deterministic policies $\pi_1,\pi_2$, we let $\mathbb{E}_{\pi_1,\pi_2}$ denote the expectation of sequences $(\mathbf{x}_t^{\pi_i},\mathbf{u}_t^{\pi_i})_{t \ge 1}$ under the dynamics $f$, coupled so that $\mathbf{x}_1^{\pi_1} = \mathbf{x}_1^{\pi_2} \sim D$. We consider estimation of **deterministic, Markovian** expert policies $\pi^*: \mathcal{X} \to \mathcal{U}$ given a problem horizon $T$. Our aim is to learn some policy $\hat{\pi}$ which accumulates low squared-**trajectory error**:
+
+$$
+J_{L^2}^T(\hat{\pi}) \triangleq \mathbb{E}_{\hat{\pi},\pi^*}\left[\sum_{t=1}^T \min\left\{1,\|\hat{\mathbf{x}}_t - \mathbf{x}_t^*\|^2 +\|\hat{\mathbf{u}}_t - \mathbf{u}_t^* \|^2\right\}\right].
+$$
+
+### The Compounding Errors Problem
+
+Let $\mathcal{A}$ be a (possibly randomized) mapping from a sample of $n$ trajectories $S_n \sim \mathcal{P}_{\text{demo}}$ to an imitator policy $\hat{\pi} \sim \text{alg}(S_n)$. The problem instance suffers **exponential compounding errors** if:
+
+$$
+E_{\hat{\pi}, S_n}[J_{L^2}^T(\hat{\pi})] \gtrsim C^T \cdot E_{\hat{\pi}, S_n}[J_{\text{demo}}^T(\hat{\pi}; \mathcal{P}_{\text{demo}})],
+$$
+
+for some $C > 1$. In other words, imitating via empirical risk minimization on a given demonstration distribution $\mathcal{P}_{\text{demo}}$ leads to learned policies $\hat{\pi}$ that suffer exponentially more **trajectory error** rolled out in closed-loop compared to their **on-expert** regression error.
+
+### Incremental Stability
+
+As proposed in prior work, compounding error can be understood through the lens of control-theoretic **stability**, which describes the sensitivity of the dynamics to perturbations of the state or input. We consider a notion of **incremental stability**.
+
+<Block title="EISS" type="Definition">
+A system $\mathbf{x}_{t+1} = f(\mathbf{x}_t, \mathbf{u}_t)$ is $(C_{\text{ISS}}, \rho)$-**exponentially incrementally input-to-state stable** (EISS) if for all pairs of initial conditions $(\mathbf{x}_1,\mathbf{x}_1')$ and input sequences $(\{\mathbf{u}_t\}_{t\geq1}, \{\mathbf{u}_t'\}_{t\geq1})$, there exist constants $C_{\text{ISS}} \geq 1$, $\rho \in (0, 1)$ such that for any $t \geq 1$:
+$$
+\|\mathbf{x}_t - \mathbf{x}_t'\| \leq C_{\text{ISS}} \rho^{t-1} \|\mathbf{x}_1 - \mathbf{x}_1'\| + C_{\text{ISS}} \sum_{k=1}^{t-1} \rho^{t-1-k} \|\mathbf{u}_k - \mathbf{u}_k'\|, \quad t \geq 1.
+$$
+We say a policy-dynamics pair $(\pi,f)$ is $(C_{\text{ISS}},\rho)$-EISS if the induced closed-loop dynamics $f^\pi$ is $(C_{\text{ISS}},\rho)$-EISS.
+</Block>
+
+<FigureEnv>
+  <HStack>
+    <Figure src="/figs/stability_diagram.svg"
+        alt="Visualization of EISS (Exponentially Incrementally Input-to-State Stable)" />
+  </HStack>
+</FigureEnv>
+

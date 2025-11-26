@@ -1,0 +1,55 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Hero from "../components/Hero.astro";
+import { getEntry, render } from "astro:content";
+import { siteConfig } from "../config";
+import logo from "../assets/bloomfolio.png";
+
+// Load paper content
+const introEntry = await getEntry("paper", "introduction");
+const { Content: IntroContent } = await render(introEntry);
+
+const prelimEntry = await getEntry("paper", "preliminaries");
+const { Content: PrelimContent } = await render(prelimEntry);
+
+const actionChunkEntry = await getEntry("paper", "action-chunking");
+const { Content: ActionChunkContent } = await render(actionChunkEntry);
+
+const noiseEntry = await getEntry("paper", "noise-injection");
+const { Content: NoiseContent } = await render(noiseEntry);
+
+const experimentsEntry = await getEntry("paper", "experiments");
+const { Content: ExperimentsContent } = await render(experimentsEntry);
+
+const discussionEntry = await getEntry("paper", "discussion");
+const { Content: DiscussionContent } = await render(discussionEntry);
+---
+
+<Layout
+  title={`${siteConfig.name} - Research Paper`}
+  description={siteConfig.description}
+>
+  <main>
+    <!-- Hero Section (Always visible) -->
+    <Hero
+      name={siteConfig.name}
+      title={siteConfig.title}
+      description={siteConfig.description}
+      avatar={logo}
+      location={siteConfig.location}
+      socialLinks={siteConfig.socialLinks}
+    />
+
+    <!-- Paper Content -->
+    <article class="max-w-4xl mx-auto px-4 py-10">
+      <div class="prose-content max-w-none">
+        <IntroContent />
+        <PrelimContent />
+        <ActionChunkContent />
+        <NoiseContent />
+        <ExperimentsContent />
+        <DiscussionContent />
+      </div>
+    </article>
+  </main>
+</Layout>

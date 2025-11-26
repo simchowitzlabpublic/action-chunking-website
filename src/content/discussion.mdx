@@ -1,0 +1,10 @@
+## Discussion and Limitations
+
+Our action-chunking guarantees rely on a structural assumption of $(\hat{\pi}, \hat{f}) \in \mathcal{P}$ being an EISS pair. We believe either explicitly enforcing this, e.g., via regularization or hierarchy, or attaining it indirectly via implicit biases, are interesting directions of inquiry.
+
+We assume smoothness in the noise injection section, which is not strictly satisfied in some applications, such as in model-predictive control. We remark our lower bound depends on smoothness in $C_\pi$, which implies it is in some sense a fundamental aspect of noise-injection. However, we believe our results should extend to piece-wise notions, and note ongoing research exploring **smoothing** for learning in dynamical systems.
+
+In general, we leave a sharp characterization of the role of smoothness and control-theoretic quantities in IL as an open problem. We also note though our theory suggests isotropic noise injection suffices, this may not be desirable in certain practical contexts, such as highly dexterous robotics. In light of our findings elucidating the precise role of noising, we leave designing robust practical recipes for perturbative data collection for future inquiry.
+
+Lastly, we leave investigating the marginal benefit of **iterative** interaction as future work.
+

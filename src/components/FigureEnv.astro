@@ -1,0 +1,21 @@
+---
+---
+
+<div class=" max-w-6xl mx-auto flex flex-col items-center">
+  <div class="env-container flex flex-row items-center justify-center">
+    <div class="max-w-6xl flex flex-col items-center justify-center">
+       <slot />
+    </div>
+  </div>
+</div>
+
+<style>
+  .env-container {
+    width: 100vw;
+    background-color: var(--color-base-200);
+    margin: 1rem 0;
+  }
+  .env-inner {
+    width: 90vw;
+  }
+</style>
