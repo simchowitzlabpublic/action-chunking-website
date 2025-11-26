@@ -17,6 +17,8 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      ASTRO_SITE_URL: "https://simchowitzlabpublic.github.io/action-chunking-project/"
     steps:
       - name: Checkout your repository using git
         uses: actions/checkout@v5
@@ -26,8 +28,6 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    env:
-      ASTRO_BASE_PATH: ${{ steps.deployment.outputs.page_url }}
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
