@@ -5,20 +5,18 @@ import HStack from '../components/HStack.astro';
 
 export const BASE_URL = import.meta.env.BASE_URL;
 
-## Introduction
+Imitation Learning (IL), using teleoprated or synthetic demonstration data, has become a cornerstone of general-purpose robotics platforms. Most IL pipelines have converged on three defining pipeline characteristics:
 
-Imitation learning (IL) is the problem of learning complex behaviors from data labeled with actions from an expert demonstrator policy. This methodology encompasses both some of the earliest examples and most recent state-of-the-art in control for autonomous robotic systems. Following the rise of large language models (LLMs), IL has also become increasingly prevalent in settings where an agent predicts **discrete tokens**, such as words in a sentence, lines in a proof, or positions on a chessboard. Such methods have also seen adoption in the context of both continuous and discretized-action control of continuous state-space dynamical systems in an autoregressive fashion.
+  1. The prediction of open-loop sequences, or "chunks" of actions by the control policy, called **action-chunking** (AC),
+  2. The careful curation of expert data to be imitated.
+  3. The adoption of **generative** neural architectures (e.g. conditional diffusion models) as parameterizations of learned policies. 
+  
+While the benefits of (3) have been studied broadly, a precise understanding of how action-chunking and curated expert data improve behavior cloning performance remains elusive.
 
-The recent and dramatic successes of imitation learning in continuous control applications has coincided with a range of algorithmic interventions which appear essential to ensure strong performance:
+We provide the first substantive theoretical guarantees justifying the practices of AC and exploratory data augmentation during expert data collection in the **minimal** setting of imitation of an expert in a state-based continuous-control problem. Our point of departure is the finding in recent work that imitation learning in continuous settings&mdash;even those whose dynamics and expert demonstrator appear benign&mdash;can be considerably more challenging than imitation in discrete settings, such as those encountered in language modeling, demonstrating compounding errors can grow exponentially with horizon, as opposed to polynomially (or none).
 
-  1. the prediction of open-loop sequences, or "chunks" of actions by the control policy, called **action-chunking** (AC),
-  2. the careful curation of expert data to be imitated and 3. the adoption of **generative** neural architectures (e.g. conditional diffusion models) as parameterizations of learned policies. While the benefits of 3. have been studied broadly, a precise understanding of how action-chunking and curated expert data improve behavior cloning performance remains elusive.
 
-In this work, we provide the first theoretical guarantees justifying the practices of AC and exploratory data augmentation during expert data collection (defined formally below) in the **minimal** setting of imitation of an expert in a state-based continuous-control problem. Our point of departure is the finding in recent work that imitation learning in continuous settings&mdash;even those whose dynamics and expert demonstrator appear benign&mdash;can be considerably more challenging than imitation in discrete settings, such as those encountered in language modeling, demonstrating compounding errors can grow exponentially with horizon, as opposed to polynomially (or none).
-
-### Contributions
-
-We provide the first theoretical guarantees in continuous state-action IL for **interventions that provably prevent compounding error without iterative expert feedback.** Whereas previous work require either iterative interaction with the expert or knowledge of the underlying system, we establish our results without access to such oracles, using near-"vanilla" behavior cloning. We study two key practices:
+Concretely, we study the following widespread practices:
 
 **Intervention 1: Action-Chunking.** When the environment is benign, we show the algorithmic modification of **action-chunking**, i.e., predicting and playing open-loop sequences of actions, mitigates compounding errors without requiring any modification to the expert data.
 
