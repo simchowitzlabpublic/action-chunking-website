@@ -1,7 +1,6 @@
 ---
 import "../styles/global.css";
 import ThemeToggle from "../components/ThemeToggle.astro";
-import ThemeSelector from "../components/ThemeSelector.astro";
 import FabFlower from "../components/FabFlower.astro";
 import { ClientRouter } from "astro:transitions";
 import { siteConfig } from "../config";
@@ -77,7 +76,7 @@ const origin = Astro.url.origin;
   <body class="min-h-screen">
     <!-- Theme Controls - Fixed Position -->
     <div class="fixed top-4 right-4 z-50">
-      {siteConfig.enableThemeSelector ? <ThemeSelector /> : <ThemeToggle />}
+      <ThemeToggle/>
     </div>
 
     <slot />

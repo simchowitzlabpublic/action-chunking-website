@@ -1,6 +1,6 @@
 @import "tailwindcss";
 @plugin "daisyui" {
-  themes: emerald --default, dim --prefersdark, dark, synthwave, retro, valentine, dracula;
+  themes: emerald --default, dim --prefersdark;
 };
 
 /* Inline math should stay inline */
@@ -24,7 +24,7 @@ mjx-container.MathJax[jax="SVG"][display="true"] {
     .prose-content h4, .prose-content h5, .prose-content h6 {
   margin: 1rem 0 0.5rem 0;
   font-weight: bold;
-  color: var(--color-accent);
+  color: var(--color-primary);
 }
 
 .prose-content h1 {
