@@ -1,6 +1,6 @@
 @import "tailwindcss";
 @plugin "daisyui" {
-  themes: light --default, dim --prefersdark, dark, synthwave, retro, valentine, dracula;
+  themes: emerald --default, dim --prefersdark, dark, synthwave, retro, valentine, dracula;
 };
 
 /* Inline math should stay inline */
