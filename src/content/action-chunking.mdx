@@ -3,7 +3,7 @@ import Figure from '../components/Figure.astro';
 import FigureEnv from '../components/FigureEnv.astro';
 import HStack from '../components/HStack.astro';
 
-export const BASE_URL = import.meta.env.BASE_URL;
+export const BASE_URL = import.meta.env.BASE_URL.replace(/\/+$/, '');
 
 ## Action-Chunking *Does* Prevent Exponential Compounding Errors  in Open-Loop Stable Systems
 
