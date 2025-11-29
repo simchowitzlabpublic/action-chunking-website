@@ -18,7 +18,7 @@ function capitalize(string) {
   <div class="card-body">
     <div>
     <span class="inline-title">
-      {title ? `${type} (${title}):` : `${type}:`}
+      {title ? `${type} (${title}):` : (type ? `${type}:` : '')}
     </span>
     <slot />
     </div>

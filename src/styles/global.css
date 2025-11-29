@@ -16,8 +16,19 @@ mjx-container.MathJax[jax="SVG"][display="true"] {
   margin: 0 0 1rem 0;
 }
 
+.hidden {
+  display: none;
+}
+.footnotes > h2 {
+  display: none;
+}
+
 .card {
   margin: 0 0 1rem 0;
+}
+.card-body {
+  font-size: 1.1em;
+  padding: 1rem 1.5rem 1rem 1.5rem;
 }
 
 .prose-content h1, .prose-content h2, .prose-content h3,
@@ -36,11 +47,11 @@ mjx-container.MathJax[jax="SVG"][display="true"] {
 }
 
 .prose-content h3 {
-  font-size: 1.25rem;
+  font-size: 1.125rem;
 }
 
 .prose-content h4 {
-  font-size: 1.125rem;
+  font-size: 1.065rem;
 }
 
 .prose-content h5 {

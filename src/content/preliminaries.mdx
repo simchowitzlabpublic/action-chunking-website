@@ -1,16 +1,20 @@
+---
+bibliography: ./src/content/references.bib
+---
+
 import Block from '../components/Block.astro';
 import Figure from '../components/Figure.astro';
 import FigureEnv from '../components/FigureEnv.astro';
 import HStack from '../components/HStack.astro';
+import Refs from '../components/Refs.astro';
 
 export const BASE_URL = import.meta.env.BASE_URL.replace(/\/+$/, '');
 
 ## Preliminaries
 
-### Control Systems 
-To isolate the effects of compounding error, we consider the minimal setting of imitation learning of a **deterministic, Markovian expert** in a fully observed, continuous state-action environment. Speficially, we adopt the language of a **control system** as a natural abstraction for decision making in robot learning.
+To isolate the effects of compounding error, we consider the minimal setting a fully observed, continuous state-action environment. Speficially, we adopt the language of a **control system** as a natural abstraction for decision making in robot learning.
 
-A discrete-time, continuous state-action control system is defined by 
+A **determinsitic, discrete-time, continuous state-action** control system is defined by 
 
 1. **States** $\mathbf{x}_t \in \mathcal{X} = \mathbb{R}^{d_x}$
 2. **Control inputs** $\mathbf{u}_t \in \mathcal{U} = \mathbb{R}^{d_u}$, which correspond to actions.
@@ -18,40 +22,40 @@ A discrete-time, continuous state-action control system is defined by
 
 Thus, a control system is just an Markov Decision Process (MDP) with deterministic transitions and no rewards, tailored to continuous state and action spaces. We assume the initial state is drawn $\mathbf{x}_1 \sim D$ for some distribution $D$ fixed throughout.
 
+#### Imitation Learning in Control Systems 
 
-### Imitation Learning in Control Systems 
+Our goal is to *learn* a policy $\hat{\pi}$ which mimics the behavior of a given **expert policy**, $\pi^\star$ (e.g. a human demonstrator) given demonstration data. Formally:
 
-**TODO** setup the imitation learning problem. 
+A deterministic policy $\pi$ maps histories of states, inputs, and the current time step to a control input $\mathbf{u}_t = \pi(\mathbf{x}_{1:t},\mathbf{u}_{1:t-1},t)$.  Given two deterministic policies $\pi_1,\pi_2$, we let $\mathbb{E}_{\pi_1,\pi_2}$ denote the expectation over sequences $(\mathbf{x}_t^{\pi_i},\mathbf{u}_t^{\pi_i})_{t \ge 1}$ under the dynamics $f$ and using $\pi_1, \pi_2$ respectively, where $\mathbf{x}_1^{\pi_1} = \mathbf{x}_1^{\pi_2} \sim D$. Our aim is thus to learn some policy $\hat{\pi}$ which accumulates **low squared-trajectory error**[^1]:
 
-
-A deterministic policy $\pi$ maps histories of states, inputs, and the current time step to a control input $\mathbf{u}_t = \pi(\mathbf{x}_{1:t},\mathbf{u}_{1:t-1},t)$.  Given two deterministic policies $\pi_1,\pi_2$, we let $\mathbb{E}_{\pi_1,\pi_2}$ denote the expectation of sequences $(\mathbf{x}_t^{\pi_i},\mathbf{u}_t^{\pi_i})_{t \ge 1}$ under the dynamics $f$, coupled so that $\mathbf{x}_1^{\pi_1} = \mathbf{x}_1^{\pi_2} \sim D$. We consider estimation of **deterministic, Markovian** expert policies $\pi^*: \mathcal{X} \to \mathcal{U}$ given a problem horizon $T$. Our aim is to learn some policy $\hat{\pi}$ which accumulates low squared-**trajectory error**:
-
+[^1]: We use $\min\{1, \cdot\}$ such that large expected errors
+are not possibly indicative of vanishingly small events.
 $$
 J_{\mathrm{imitation}}(\hat{\pi}) \triangleq \mathbb{E}_{\hat{\pi},\pi^*}\left[\sum_{t=1}^T \min\left\{1,\|\hat{\mathbf{x}}_t - \mathbf{x}_t^*\|^2 +\|\hat{\mathbf{u}}_t - \mathbf{u}_t^* \|^2\right\}\right].
 $$
 
+We say $\pi$ is Markovian and time-invariant if we can simply express $\mathbf{u}_t = \pi(\mathbf{x}_t)$. In this case, we define the **closed-loop dynamics** $f^{\pi}(\mathbf{x},\mathbf{u}) \triangleq f(\mathbf{x}, \pi(\mathbf{x}) + \mathbf{u})$, and $f^{\pi}(\mathbf{x}) \triangleq f(\mathbf{x},\pi(\mathbf{x}))$.
 
-### The Compounding Errors Problem
+Throughout the rest of this post we will assume that we have been given access to some number of **demonstration trajectories** sampled from $\mathcal{P}_{\text{demo}}$ (generally sampling from $\pi^\star$). An offline Imitation Learning algorithm $\mathcal{A}$ can thus be formalized as a (possibly randomized) map from $n$ IID demonstration trajectories $S_n \sim (\mathcal{P}_{\text{demo}})^{\otimes n}$ to a policy $\hat{\pi}$. The resulting $\hat{\pi}$ suffers from some **on-expert error**[^1],
+$$
+J_{\mathrm{demo}}(\hat{\pi}) \triangleq \mathbb{E}_{\pi^*}\left[\sum_{t=1}^T \min\left\{1,\|\hat{\pi}(\mathbf{x}_t^\star) - \pi^\star(\mathbf{x}_t^\star)\|^2\right\}\right].
+$$
 
+### The Compounding Error Problem
 
-We say $\pi$ is Markovian and time-invariant if we can simply express $\mathbf{u}_t = \pi(\mathbf{x}_t)$. In this case, we define the closed-loop dynamics $f^{\pi}(\mathbf{x},\mathbf{u}) \triangleq f(\mathbf{x}, \pi(\mathbf{x}) + \mathbf{u})$, and $f^{\pi}(\mathbf{x}) = f^{\pi}(\mathbf{x},0)$.
+One of the key challenges in Imitation Learning is that of *Compounding Error* [@simchowitz2025pitfalls], which we can now formalize explicitly,
 
 <Block title="Compounding Error" type="Definition">
-Let $\mathcal{A}$ be a (possibly randomized) mapping from a sample of $n$ trajectories $S_n \sim \mathcal{P}_{\text{demo}}$ to an imitator policy $\hat{\pi} \sim \text{alg}(S_n)$. The problem instance suffers **exponential compounding errors** if:
-
-<br/>
-$$E_{\hat{\pi}, S_n}[J_{\mathrm{imitation}}(\hat{\pi})] \gtrsim C^T \cdot E_{\hat{\pi}, S_n}[J_{\mathrm{demo}}(\hat{\pi}; \mathcal{P}_{\text{demo}})],$$
-
-for some $C > 1$.  **TODO fix spacing**
+An imitation learning algorithm $\mathcal{A}$ suffers from **exponential compounding errors** on $(f, \mathcal{D}, \pi^\star)$ if, for some $C > 1$,
+<div style="height: 0.8em"></div>
+$$
+E_{\hat{\pi}, S_n}[J_{\mathrm{imitation}}(\hat{\pi})] \gtrsim C^T \cdot E_{\hat{\pi}, S_n}[J_{\mathrm{demo}}(\hat{\pi}; \mathcal{P}_{\text{demo}})].
+$$
 </Block>
 In other words, imitating via empirical risk minimization on a given demonstration distribution $\mathcal{P}_{\text{demo}}$ leads to learned policies $\hat{\pi}$ that suffer exponentially more **trajectory error** rolled out in closed-loop compared to their **on-expert** regression error.
 
 
-### "Nice" Control Systems: Incremental Stability
-
-
-
-As proposed in prior work, compounding error can be understood through the lens of control-theoretic **stability**, which describes the sensitivity of the dynamics to perturbations of the state or input. We consider a notion of **incremental stability**.
+As proposed in prior work [@pfrommer2022tasil;@tu2022sample], compounding error can be understood through the lens of control-theoretic **stability**, which describes the sensitivity of the dynamics to perturbations of the state or input. We specifically consider the following notion of **incremental stability**, which models the rate at which two trajectories converge or diverge under different control inputs.
 
 <Block title="EISS" type="Definition">
 A system $\mathbf{x}_{t+1} = f(\mathbf{x}_t, \mathbf{u}_t)$ is $(C_{\text{ISS}}, \rho)$-**exponentially incrementally input-to-state stable** (EISS) if for all pairs of initial conditions $(\mathbf{x}_1,\mathbf{x}_1')$ and input sequences $(\{\mathbf{u}_t\}_{t\geq1}, \{\mathbf{u}_t'\}_{t\geq1})$, there exist constants $C_{\text{ISS}} \geq 1$, $\rho \in (0, 1)$ such that for any $t \geq 1$:
@@ -61,19 +65,43 @@ $$
 We say a policy-dynamics pair $(\pi,f)$ is $(C_{\text{ISS}},\rho)$-EISS if the induced closed-loop dynamics $f^\pi$ is $(C_{\text{ISS}},\rho)$-EISS.
 </Block>
 
+Intuitively, $C_{\text{ISS}}$ captures the sensitivity of the state with respectivity to errors in control inputs, while $\rho$ captures the rate at which errors from previous steps decay. In particular, we **note that for the closed loop system** $f^\pi(x_t, u_t)$, the ``input'' $u_t$ is on top of $\pi(x_t)$, meaning the $\|\mathbf{u}_k - \mathbf{u}_k'\|$ term above captures the policy-relative error, and not the difference in control inputs given to $f$. We can visualize this below as follows:
 
 <FigureEnv>
   <HStack>
     <Figure src={`${BASE_URL}/figs/stability_diagram.svg`}
-        alt="Visualization of EISS (Exponentially Incrementally Input-to-State Stable)" />
+        alt="Visualization of EISS (Exponential-Incremental-Input-to-State Stability)" />
   </HStack>
+  EISS captures the ability of a system to naturally correct errors.
 </FigureEnv>
 
-<Block title="" type="Is EISS a reasonable assumption for some robotic manipulation settings? Yes">
- Many robotic manipulation settings involve quasi-static interactions between the robot and objects, where the robot controls its end-effector directly, and the objects move in response to contact forces. In these settings, the dynamics from end-effector commands to object states are often stable, as small perturbations in end-effector position lead to small perturbations in object position, without amplification over time. 
+
+
+<Block>
+<span style="color: var(--color-info); font-weight: bold;">
+Is EISS of the open-loop dynamics $f(x, u)$ a reasonable assumption?
+</span>
+**We believe so.**
+Many robotic manipulation settings involve quasi-static interactions between the robot and objects, where the learned policy controls the position of the end-effector directly, and the objects move in response to contact forces. In these settings, the dynamics from end-effector commands to object states are often stable, as small perturbations in end-effector position lead to small perturbations in object position, without amplification over time.
+
+This means that for most settings, the components of the state corresponding to the environment are at worst *marginally* stable ($\rho = 1$), while the components corresponding to the robot's state are EISS ($\rho < 1$) due to the position-based control paradigm.
 </Block>
-**TODO: Insert tracking figure
+
+Given an EISS system (for either $f$ or the closed-loop $f^\pi$), it may appear that Imitation Learning is inherently easy. As errors decay exponentially over time, small control errors yield only minor differences in state, which again yields a small input error...and so forth.
+
+However, this is unfortunately not the case: it is possible to construct fairly simple (dynamics, expert) pairs $(f, \pi^\star)$ such where **both** the open-loop $f$ and closed-loop $f^\pi$ are EISS, yet the closed-loop $f^\hat{\pi}$ is potentially **not EISS, for any choice of algorithm $\mathcal{A}$.**. This surprising fact is formalized in our prior work [@simchowitz2025pitfalls], which we restate (informally) here:
+
+<Block>
+</Block>
 
 ### Exponential Stability *Does Not* Prevent Exponential Compounding Errors
 
 **Explain this point** 
+
+{/*
+  * Capture and hide the auto-generated bibliography
+  * for this markdown fragment.
+  */}
+<Refs show={false}>
+  [^ref]
+</Refs>

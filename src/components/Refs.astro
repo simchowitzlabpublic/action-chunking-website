@@ -1,0 +1,11 @@
+---
+interface Props {
+  show?: bool;
+}
+
+const { show } = Astro.props;
+---
+
+<div class={show ? 'refs' : ''}>
+  { show ? (<slot />) : <p/> }
+</div>

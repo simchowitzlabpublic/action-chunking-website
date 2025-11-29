@@ -1,3 +1,9 @@
+---
+bibliography: ./src/content/references.bib
+---
+
+import Refs from '../components/Refs.astro';
+
 ## Discussion and Limitations
 
 Our action-chunking guarantees rely on a structural assumption of $(\hat{\pi}, \hat{f}) \in \mathcal{P}$ being an EISS pair. We believe either explicitly enforcing this, e.g., via regularization or hierarchy, or attaining it indirectly via implicit biases, are interesting directions of inquiry.
@@ -8,3 +14,15 @@ In general, we leave a sharp characterization of the role of smoothness and cont
 
 Lastly, we leave investigating the marginal benefit of **iterative** interaction as future work.
 
+{/*
+Include fake references (not shown) and then generate the whole
+bibliography here.
+*/}
+
+<Refs show={false}>
+   [@alvinn]
+</Refs>
+# References
+<Refs show={true}>
+  [^ref]
+</Refs>

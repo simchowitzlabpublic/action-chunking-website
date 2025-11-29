@@ -4,7 +4,9 @@ import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import mdx from '@astrojs/mdx';
 import remarkMath from 'remark-math';
+import remarkGfm from 'remark-gfm';
 import rehypeMathjax from 'rehype-mathjax';
+import rehypeCitation from 'rehype-citation';
 
 const SITE_URL = process.env.ASTRO_SITE_URL || undefined;
 const BASE_PATH = SITE_URL ? new URL(SITE_URL).pathname : undefined;
@@ -16,7 +18,10 @@ export default defineConfig({
   trailingSlash: 'never',
   integrations: [
     mdx({
-      remarkPlugins: [remarkMath],
+      remarkPlugins: [
+        remarkMath,
+        remarkGfm,
+      ],
       rehypePlugins: [
         [
           rehypeMathjax,
@@ -27,11 +32,18 @@ export default defineConfig({
             },
           },
         ],
+        [
+          rehypeCitation,
+          {
+            linkCitations: true,
+            showTooltips: true,
+          }
+        ]
       ],
     }),
   ],
   markdown: {
-    remarkPlugins: [remarkMath],
+    remarkPlugins: [remarkMath, remarkGfm],
     rehypePlugins: [
       [
         rehypeMathjax,
@@ -42,6 +54,7 @@ export default defineConfig({
           },
         },
       ],
+      rehypeCitation,
     ],
   },
   vite: {
