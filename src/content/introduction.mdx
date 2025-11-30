@@ -40,7 +40,7 @@ There are a number of speculated benefits associated with action-chunking, inclu
 
 
 <Block type="Finding 1"> 
-When the underlying environment is inherently stablizing (i.e. open-loop stable), **action-chunking** alone suffices to prevent compounding errors, leading to horizon-free imitation guarantees. In contrast, without action-chunking, prior work (Simchowitz, Pfrommer, Jadbabaie '25') show that errors can grow expoenntially in the problem horizon, even when the dynamics are stable. 
+When the underlying environment is inherently stablizing (i.e. open-loop stable), **action-chunking** alone suffices to prevent compounding errors, leading to horizon-free imitation guarantees. In contrast, without action-chunking, prior work [@simchowitz2025pitfalls] show that errors can grow expoenntially in the problem horizon, even when the dynamics are stable. 
 </Block>
 We validate this finding in simulated robotic manipulation tasks from RoboMimic, where we observe that increasing chunk-lengths leads to significant improvements in task success rates. We do so even for deterministic policies imitating a deterministic expert, confirming that the benefits of action-chunking can be realized even in the absence of multi-modality or partial observability.
 <FigureEnv>
