@@ -12,14 +12,21 @@ export const BASE_URL = import.meta.env.BASE_URL.replace(/\/+$/, '');
 
 ## Introduction
 
-Behavior Cloning (BC), or learning from human demonstration, is a foundational component of modern robotic learning. Though BC has been studied for decades in other domains [@pomerleau1988alvinn], only recently has it been seriously applied to robotic manipulation tasks. Though these successess have been attributed to the use of generative models (e.g. diffusion models) as parametrizations for control policies, a second ingredient of equal importance is the practice of **action-chunking** (AC), where policies predict and execute open-loop sequences of actions, or "chunks" [@zhao2023learning;@chi2023diffusion]. In this writeup, we aim to answer: 
+Behavior Cloning (BC), or learning from human demonstration, is a foundational component of modern robotic learning. Though BC has been studied for decades in other domains [@pomerleau1988alvinn], only recently has it been seriously applied to robotic manipulation tasks. Though these successess have been attributed to the use of generative models (e.g. diffusion models) as parametrizations for control policies, a second ingredient of equal importance is the practice of **action-chunking** (AC), where policies predict and execute open-loop sequences of actions, or "chunks" [@zhao2023learning;@chi2023diffusion].
+
+<Block>
+In this writeup, we aim to answer: 
  
   **1. Why does action-chunking help behavior cloning in robotic manipulation?**  
 
   **2. When action-chunking doesn't work, what else can be done?**
+</Block>
 
+<FigureEnv>
+   <Figure src={`${BASE_URL}/figs/chunking_fig.svg`}/>
+   Action-chunking policies predict entire sequences of future control actions and executes them without querying the policy again. These actions are generally used as inputs to a lower-level position-based controller.
+</FigureEnv>
 
-{/* **TODO: Insert AC Figure from Slack** */}
 
 Our findings crucially depend on the properties of both the **open-loop dynamics** (where actions are generated without access to the underlying state) and the **closed-loop dynamics** (where actions are based on the current state and we must consider the combined environment + policy system as a whole).
 
@@ -31,10 +38,9 @@ There are a number of speculated benefits associated with action-chunking, inclu
 
 
 <Block type="Finding 1"> 
-When the underlying environment is inherently stablizing (i.e. open-loop stable), action-chunking alone suffices to prevent compounding errors, leading to horizon-free imitation guarantees. In contrast, without action-chunking, prior work (Simchowitz, Pfrommer, Jadbabaie '25') show that errors can grow expoenntially in the problem horizon, even when the dynamics are stable. 
+When the underlying environment is inherently stablizing (i.e. open-loop stable), **action-chunking** alone suffices to prevent compounding errors, leading to horizon-free imitation guarantees. In contrast, without action-chunking, prior work (Simchowitz, Pfrommer, Jadbabaie '25') show that errors can grow expoenntially in the problem horizon, even when the dynamics are stable. 
 </Block>
 We validate this finding in simulated robotic manipulation tasks from RoboMimic, where we observe that increasing chunk-lengths leads to significant improvements in task success rates. We do so even for deterministic policies imitating a deterministic expert, confirming that the benefits of action-chunking can be realized even in the absence of multi-modality or partial observability.
-
 <FigureEnv>
   <HStack>
     <Figure src={`${BASE_URL}/figs/robomimic_toolhang.png`} alt="RoboMimic experiments: Success rates as a function of evaluated action-chunk lengths"/>
@@ -51,7 +57,7 @@ Informally, stability of a dynamical system measures its sensitivity to compound
 
 However, when the underlying environment is not open-loop stable, action-chunking alone is insufficient to prevent compounding errors, and can even make compounding error worse. In fact, Simchowitz et al. '25 show that, in this regime, *no algorithmic* modification suffices to mitigate error compounding. Instead, we need **better data**.  To this end, we consider a simple practice where the expert demonstrator adds a small amount of well-conditioned noise to their actions during data collection, but collects ground-truth action labels. 
 <Block type="Finding 2"> 
-We show that a simple noise-injection procedure suffices to prevent compounding errors, even when the underlying environment is not inherently stabilizing, provided that the expert demonstrator is capable of correcting from errors.
+We show that a simple exploratory data collection procedure suffices to prevent compounding errors, even when the underlying environment is not inherently stabilizing, provided that the expert demonstrator is capable of correcting from errors.
 </Block>
 
 The effect of noise injection during demonstration collection for unstable environments can be easily understood by examining reward accumulation over a single trajectory in a continuous control environment such as the MuJoCo continuous control suite:

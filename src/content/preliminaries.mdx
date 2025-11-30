@@ -14,6 +14,7 @@ export const BASE_URL = import.meta.env.BASE_URL.replace(/\/+$/, '');
 
 To isolate the effects of compounding error, we consider the minimal setting a fully observed, continuous state-action environment. Speficially, we adopt the language of a **control system** as a natural abstraction for decision making in robot learning.
 
+<Block>
 A **determinsitic[^1], discrete-time, continuous state-action** control system is defined by 
 
 [^1]: For systems with stochastic state transitions, we can "de-randomize" the system by absorbing the stochasticity into the initial state.
@@ -21,6 +22,7 @@ A **determinsitic[^1], discrete-time, continuous state-action** control system i
 1. **States** $\mathbf{x}_t \in \mathcal{X} = \mathbb{R}^{d_x}$
 2. **Control inputs** $\mathbf{u}_t \in \mathcal{U} = \mathbb{R}^{d_u}$, which correspond to actions.
 3. **Dynamics** deterministically evolving according to $\mathbf{x}_{t+1} = f(\mathbf{x}_t,\mathbf{u}_t)$.
+</Block>
 
 Thus, a control system is just an Markov Decision Process (MDP) with deterministic transitions and no rewards, tailored to continuous state and action spaces. We assume the initial state is drawn $\mathbf{x}_1 \sim D$ for some distribution $D$ fixed throughout.
 

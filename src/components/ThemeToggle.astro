@@ -23,8 +23,8 @@ const LIGHT_THEME = 'emerald';
   const LIGHT_THEME = 'emerald';
   // Set theme on page load based on localStorage or system preference
   function setTheme() {
-    const theme = localStorage.getItem('theme') ||
-                  (window.matchMedia('(prefers-color-scheme: dark)').matches ? DARK_THEME : LIGHT_THEME);
+    const theme = localStorage.getItem('theme') || LIGHT_THEME;
+                  // (window.matchMedia('(prefers-color-scheme: dark)').matches ? DARK_THEME : LIGHT_THEME);
     document.documentElement.setAttribute('data-theme', theme);
     const toggle = document.querySelector('.theme-controller');
     if (toggle) {
