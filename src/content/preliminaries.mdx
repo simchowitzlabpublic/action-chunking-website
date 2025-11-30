@@ -90,6 +90,13 @@ Many robotic manipulation settings involve quasi-static interactions between the
 This means that for most settings, the components of the state corresponding to the environment are at worst *marginally* stable ($\rho = 1$), while the components corresponding to the robot's state are EISS ($\rho < 1$) due to the position-based control paradigm.
 </Block>
 
+<FigureEnv>
+  <HStack>
+    <Figure src={`${BASE_URL}/figs/control_loop.svg`}/>
+  </HStack>
+  Open-loop EISS abstracts the presence of a stabilizing lower-level control algorithm, such as a PID-based position controller.
+</FigureEnv>
+
 Given an EISS system (for either $f$ or the closed-loop $f^\pi$), it may appear that Imitation Learning is inherently easy. As errors decay exponentially over time, small control errors yield only minor differences in state, which again yields a small input error...and so forth.
 
 However, this is unfortunately not the case. This surprising fact is formalized in our prior work [@simchowitz2025pitfalls], which we restate (informally) here:
