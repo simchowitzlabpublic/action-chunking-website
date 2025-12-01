@@ -49,7 +49,7 @@ We validate this finding in simulated robotic manipulation tasks from RoboMimic,
     <Figure src={`${BASE_URL}/figs/robomimic_traj100.svg`} alt="RoboMimic trajectory results"/>
     <Figure src={`${BASE_URL}/figs/robomimic_clean_vs_noise.svg`} alt="RoboMimic clean vs noise comparison"/>
   </HStack>
-  RoboMimic tool-hang task success, as a function of both prediction horizon and evaluated chunk length.
+  RoboMimic tool-hang task success, as a function of both prediction horizon and evaluated chunk length. Center: Chunk length ablation, 100 training trajectories. Right: Ablation on noise injection vs no noise injection, 50 training trajectories.
 </FigureEnv>
 
 
@@ -70,7 +70,7 @@ The effect of noise injection during demonstration collection for unstable envir
     <Figure src={`${BASE_URL}/figs/noise_inj_sweep_sigma.png`} alt="Noise injection sweep: sigma parameter" height="10rem"/>
     <Figure src={`${BASE_URL}/figs/noise_inj_sweep_alpha_sigma1.png`} alt="Noise injection sweep: alpha and sigma1" height="10rem"/>
   </HStack>
-  Mean accumulated reward for Half-Cheetah environment by timestep, with differing levels of noise injection.
+  Mean accumulated reward for Half-Cheetah environment by timestep, with differing levels of noise injection and using the clean expert actions vs noised expert actions for the training labels.
 </FigureEnv>
 
 For the adventurous reader, we will now introduce the general framework we use to make precise these fuzzy notions of stability and performance. This requires elements from Control Theory with which many Roboticists and RL theoristists may be unfamiliar with. We build up our analytical framework in a notation-light and broadly informal manner.

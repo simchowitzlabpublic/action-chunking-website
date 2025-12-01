@@ -15,6 +15,7 @@ Action-chunking is a popular practice in modern sequential modeling pipelines, w
  3. Improved representation learning via multi-step prediction.
  4. Simulating Model-Predictive Control.
 
+We show a different mechanism, one not described by the past literature: action-chunking can leverage the open-loop stability of the system to stabilize the learned policy.
 
 <Block title="Chunking Policy" type="Definition">
 A chunking policy is specified by a chunk-length $\ell$, and a chunking policy $\text{chunk}[\pi]: \mathcal{X} \to \mathcal{U}^{\ell}$ such that $\pi(\mathbf{x}_{1:t},\mathbf{u}_{1:t-1},t) = \text{chunk}[\pi](\mathbf{x}_{\ell k})_{t - \ell k}$ where $k = \lfloor \frac{t}{\ell}\rfloor$, i.e. we predict $\ell$-length sequences which are then executed "open-loop" without feedback from $\mathbf{x}$ until the chunk has been exhausted.
@@ -24,6 +25,8 @@ For convenience we also write $\text{chunk}[\pi](\mathbf{x}) = (\text{chunk}_1(\
 $$
 J_{\text{demo}}(\hat{\pi}_{\text{chunk}}) = \mathbb{E}_{\pi^\star}\left[ \sum_{k=1}^{(T-1)/\ell} \|\mathbf{u}^*_{1+(k-1)\ell:k\ell} - \text{chunk}[\hat{\pi}_{\text{chunk}}](\mathbf{x}^*_{(k-1)\ell})\|^2\right].
 $$
+
+We now formalize action-chunking for imitating deterministic expert policies:
 
 <Block type="Intervention 1" title="Learning over Chunked Policies">
 We sample $S_n$ i.i.d. trajectories drawn from the expert distribution $\mathcal{P}_{\text{demo}}$. Instead of learning $\hat{\pi}: \mathcal{X} \to \mathcal{U}$, we learn a $\ell$-chunked-policy $\text{chunk}[\hat{\pi}_{\text{chunk}}]: \mathcal{X} \to \mathcal{U}^\ell$, that attains low **on-expert error** $J_{\text{demo}}(\hat{\pi}_{\text{chunk}})$, e.g., by empirical risk minimization.
@@ -51,3 +54,5 @@ $$
 
 This implies that when the ambient dynamics $f$ are EISS, then a sufficiently chunked imitator policy will accrue limited compounding errors&mdash;**horizon-free**&mdash;relative to the on-expert error it sees.
 </Block>
+
+Our result follows from the following fact: under natural assumptions, the learners chunked policies are all closed-loop EISS. This circumvents the lower bound given earlier, in which it is hard for the learner to find policies which stabilize the dynamics if those policies must predict a single action at a time.
